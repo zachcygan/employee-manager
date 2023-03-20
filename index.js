@@ -37,8 +37,7 @@ const getMysql = async () => {
             case 'view all employees':
                 [row, fields] = await db.execute('select * from employee')
                 table = cTable.getTable(row)
-                console.log(table); 
-                break;
+                console.log(table);
                 break;
             case 'add a department':
                 console.log('add a department');
