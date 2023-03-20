@@ -1,17 +1,68 @@
-const fs = require('fs');
 const startOptions = require('./src/startMessage');
-const mysql = require('mysql2');
 const cTable = require('console.table');
 
-const db = mysql.createConnection(
-    {
-        host: 'localhost',
-        user: 'root',
-        password: 'Rk49FmRk49Fm!',
-        database: 'employees_db'
-    },
-    console.log('Connected to employees_db database')
-);
+const getMysql = async () => {
+    const mysql = require('mysql2/promise');
+
+    const db = await mysql.createConnection(
+        {
+            host: 'localhost',
+            user: 'root',
+            password: 'Rk49FmRk49Fm!',
+            database: 'employees_db',
+        },
+        console.log('Connected to employees_db database')
+    );
+
+    
+
+    let adding = true;
+    while (adding) {
+        let choice = await startOptions(startMessage);
+        let [row, fields] = '';
+        let table = '';
+        console.log('\n')
+
+        switch (choice.choice) {
+            case 'view all departments':
+                [row, fields] = await db.execute('SELECT * from department')
+                table = cTable.getTable(row)
+                console.log(table);   
+                break;
+            case 'view all roles':
+                [row, fields] = await db.execute('select role.id, role.title, department.name, role.salary from role inner join department on role.department_id=department.id')
+                table = cTable.getTable(row)
+                console.log(table); 
+                break;
+            case 'view all employees':
+                [row, fields] = await db.execute('select * from employee')
+                table = cTable.getTable(row)
+                console.log(table); 
+                break;
+                break;
+            case 'add a department':
+                console.log('add a department');
+                break;
+            case 'add a role':
+                console.log('add a role');
+                break;
+            case 'add an employee':
+                console.log('add an employee');
+                break;
+            case 'update an employee role':
+                console.log('update an employee role');
+                break;
+            case 'quit':
+                adding = false;
+                choice.ui.close();
+                break;
+            default:
+                adding = false;
+                break;
+        }
+    }
+}
+
 
 const startMessage = [
     {
@@ -49,42 +100,43 @@ async function test() {
 }
 
 const init = async () => {
+    const db = getMysql();
     let adding = true;
 
-        console.clear();
-        
+    console.clear();
 
-        while(adding) {
-            let choice = await startOptions(startMessage);
 
-            if (choice.choice === 'view all departments') {
-                const [row, fields] = await db.promise().query('select * from department')
+    // while (adding) {
+    //     let choice = await startOptions(startMessage);
 
-                console.log(fields.map(field => field.name).join('\t'));
-                console.log('-'.repeat(50));
-                // Print each row of the table
-                row.forEach(result => {
-                    console.log(Object.values(result).join('\t'));
+    //     if (choice.choice === 'view all departments') {
+    //         const [row, fields] = await db.query('select * from department')
 
-                });
+    //         console.log(fields.map(field => field.name).join('\t'));
+    //         console.log('-'.repeat(50));
+    //         // Print each row of the table
+    //         row.forEach(result => {
+    //             console.log(Object.values(result).join('\t'));
 
-                // console.log('Viewing all departments: \n');
-                // console.log(row)
-            } 
-    
-            if (choice.choice === 'view all roles') {
-                const [row, fields] = await db.promise().query('select * from role')
-                
-                console.log('Viewing all departments: \n');
-                console.log(row)
-            }
+    //         });
 
-            if (choice.choice === 'quit') {
-                adding = false;
-                break;
-            }
-        }
-    
+    //         // console.log('Viewing all departments: \n');
+    //         // console.log(row)
+    //     }
+
+    //     if (choice.choice === 'view all roles') {
+    //         const [row, fields] = await db.promise().query('select * from role')
+
+    //         console.log('Viewing all departments: \n');
+    //         console.log(row)
+    //     }
+
+    //     if (choice.choice === 'quit') {
+    //         adding = false;
+    //         break;
+    //     }
+    // }
+
         // switch (choice.choice) {
         //     case 'view all departments':
         //         db.query('select * from department', (err, results) => {
