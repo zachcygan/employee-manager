@@ -59,14 +59,14 @@ const init = async () => {
 
             if (choice.choice === 'view all departments') {
                 const [row, fields] = await db.promise().query('select * from department')
-                
+
                 console.log(fields.map(field => field.name).join('\t'));
                 console.log('-'.repeat(50));
                 // Print each row of the table
                 row.forEach(result => {
                     console.log(Object.values(result).join('\t'));
-                    
-  });
+
+                });
 
                 // console.log('Viewing all departments: \n');
                 // console.log(row)
@@ -81,6 +81,7 @@ const init = async () => {
 
             if (choice.choice === 'quit') {
                 adding = false;
+                break;
             }
         }
     
