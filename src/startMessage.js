@@ -2,12 +2,11 @@ const inquirer = require('inquirer');
 
 const startOptions = async (question) => {
     return inquirer
-        .promopt(question)
+        .prompt(question)
         .then(val => {
-
-
+            console.log('idk')
             return val;
-        })
+        });
 }
 
-module.export = startOptions;
+module.exports = startOptions;
