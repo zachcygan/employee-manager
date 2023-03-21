@@ -59,10 +59,11 @@ const getMysql = async () => {
                 break;
             case 'add an employee':
                 let employee = await addEmployee(employeeInfo)
-                await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${employee.firstName}', '${employee.lastName}', ${employee.role}, ${employee.manager})`);                console.log('add an employee');
-                console.log(`Added employee to database`)
+                await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${employee.firstName}', '${employee.lastName}', ${employee.role}, ${employee.manager})`);
+                console.log(`Added ${employee.firstName} ${employee.lastName} to database`)
                 break;
             case 'update an employee role':
+                await db.execute(`UPDATE employee SET role_id = ${} WHERE`)
                 console.log('update an employee role');
                 break;
             case 'quit':
