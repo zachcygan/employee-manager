@@ -1,6 +1,8 @@
 const askQuestion = require('./src/askQuestion');
 
 const cTable = require('console.table');
+const roles = [];
+const managers = [];
 
 const getMysql = async () => {
     const mysql = require('mysql2/promise');
@@ -20,6 +22,7 @@ const getMysql = async () => {
         let choice = await askQuestion(startMessage);
         let [row, fields] = '';
         let table = '';
+        
         console.log('\n')
 
         switch (choice.choice) {
@@ -55,20 +58,40 @@ const getMysql = async () => {
                 console.log(`Added ${role.name} added to database`);
                 break;
             case 'add an employee':
+                roles.length = 0;
+                managers.length = 0;
+                
+                const roleOptions = await db.execute(`SELECT title FROM role`);
+                const managerOptions = await db.execute('SELECT first_name FROM employee')
+                
+
+                for (let i = 0; i < roleOptions[0].length; i++) {
+                    roles.push(roleOptions[0][i].title)
+                }
+                for (let i = 0; i < managerOptions[0].length; i++) {
+                    managers.push(managerOptions[0][i].first_name)
+                }
+
+                
+
                 let employee = await askQuestion(employeeInfo)
-                await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('?', '?', ?, ?)`, [employee.firstName, employee.lastName, employee.role, employee.manager]);
+
+                let roleId = await db.execute('SELECT id FROM role WHERE title=?', [employee.role])
+                let managerId = await db.execute('SELECT id FROM employee where first_name=?', [employee.manager])
+                
+                roleId = roleId[0][0].id
+                managerId = managerId[0][0].id
+                console.log(typeof roleId)
+                console.log(typeof managerId)
+
+                await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('?', '?', ?, ?)`, [employee.firstName, employee.lastName, mroleId, managerId]);
                 console.log(`Added ${employee.firstName} ${employee.lastName} to database`)
+
+                
+
                 break;
             case 'update an employee role':
 
-                // USED FOR INQUIRER CHIOCES
-                const test = await db.execute(`SELECT first_name FROM employee`);
-                let arr = []
-                for (let i = 0; i < test[0].length; i++) {
-                    arr.push(test[0][i].first_name)
-                }
-
-                console.log(arr)
 
                 // await db.execute(`UPDATE employee SET role_id = ${} WHERE`)
                 console.log('Updated an employees role');
@@ -144,12 +167,13 @@ const employeeInfo = [
         type: 'list',
         name: 'role',
         message: "What is the the employee's role?",
-        choices: []
+        choices: roles
     },
     {
-        type: 'input',
+        type: 'list',
         name: 'manager',
-        message: 'What is the manager id of the employee?'
+        message: 'Who is the employees manager?',
+        choices: managers
     }
 ]
 
