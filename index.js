@@ -1,7 +1,5 @@
-const startOptions = require('./src/startMessage');
-const addDepartment = require('./src/addDepartment');
-const addRole = require('./src/addRole');
-const addEmployee = require('./src/addEmployee');
+const askQuestion = require('./src/askQuestion');
+
 const cTable = require('console.table');
 
 const getMysql = async () => {
@@ -21,7 +19,7 @@ const getMysql = async () => {
 
     let adding = true;
     while (adding) {
-        let choice = await startOptions(startMessage);
+        let choice = await askQuestion(startMessage);
         let [row, fields] = '';
         let table = '';
         console.log('\n')
@@ -43,22 +41,22 @@ const getMysql = async () => {
                                                   FROM employee 
                                                   INNER JOIN role ON employee.role_id = role.id 
                                                   INNER JOIN department ON role.department_id = department.id 
-                                                  `)
+                                                  INNER JOIN employee ON employee.first_name = manager.first_name`)
                 table = cTable.getTable(row)
                 console.log(table);
                 break;
             case 'add a department':
-                let name = await addDepartment(departmentName);
+                let name = await askQuestion(departmentName);
                 await db.execute(`INSERT INTO department (name) VALUES ('${name}')`)
                 console.log(`Added ${name} to the database`);
                 break;
             case 'add a role':
-                let role = await addRole(roleInfo);
+                let role = await askQuestion(roleInfo);
                 await db.execute(`INSERT INTO ROLE (title, salary, department_id) VALUES ('${role.name}', ${role.salary}, ${role.department})`)
                 console.log(`Added ${role.name} added to database`);
                 break;
             case 'add an employee':
-                let employee = await addEmployee(employeeInfo)
+                let employee = await askQuestion(employeeInfo)
                 await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${employee.firstName}', '${employee.lastName}', ${employee.role}, ${employee.manager})`);
                 console.log(`Added ${employee.firstName} ${employee.lastName} to database`)
                 break;
