@@ -37,7 +37,7 @@ const getMysql = async () => {
                 break;
             case 'view all employees':
                 [row, fields] = await db.execute(`SELECT employee.id, employee.first_name, employee.last_name, role.     title, department.name AS department, role.salary, manager.first_name AS manager
-                                                  FROM employee 
+                                                  FROM employee
                                                   INNER JOIN role ON employee.role_id = role.id 
                                                   INNER JOIN department ON role.department_id = department.id 
                                                   LEFT JOIN employee manager ON manager.id = employee.manager_id`)
@@ -56,7 +56,7 @@ const getMysql = async () => {
                 break;
             case 'add an employee':
                 let employee = await askQuestion(employeeInfo)
-                await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${employee.firstName}', '${employee.lastName}', ${employee.role}, ${employee.manager})`);
+                await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('?', '?', ?, ?)`, [employee.firstName, employee.lastName, employee.role, employee.manager]);
                 console.log(`Added ${employee.firstName} ${employee.lastName} to database`)
                 break;
             case 'update an employee role':
