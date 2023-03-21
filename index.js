@@ -1,4 +1,6 @@
 const startOptions = require('./src/startMessage');
+const addDepartment = require('./src/addDepartment');
+const addRole = require('./src/addRole')
 const cTable = require('console.table');
 
 const getMysql = async () => {
@@ -30,19 +32,28 @@ const getMysql = async () => {
                 console.log(table);   
                 break;
             case 'view all roles':
-                [row, fields] = await db.execute('select role.id, role.title, department.name, role.salary from role inner join department on role.department_id=department.id')
+                [row, fields] = await db.execute(`select role.id, role.title, department.name, role.salary 
+                                                FROM role INNER JOIN department ON role.department_id = department.id`)
                 table = cTable.getTable(row)
                 console.log(table); 
                 break;
             case 'view all employees':
-                [row, fields] = await db.execute('select * from employee')
+                [row, fields] = await db.execute(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary 
+                                                FROM employee 
+                                                INNER JOIN role ON employee.role_id = role.id 
+                                                INNER JOIN department ON role.department_id = department.id 
+                                                INNER JOIN employee manager ON employee.manager_id = manager.id`)
                 table = cTable.getTable(row)
                 console.log(table);
                 break;
             case 'add a department':
-                console.log('add a department');
+                let name = await addDepartment(departmentName);
+                await db.execute(`INSERT INTO department (name) VALUES ('${name}')`)
+                console.log(`Added ${name} to the database`);
                 break;
             case 'add a role':
+                let role = await addRole(roleInfo);
+                await db.execute(`INSERT INTO ROLE (title, salary, department_id) VALUES ('${role.name}', ${role.salary}, ${role.department})`)
                 console.log('add a role');
                 break;
             case 'add an employee':
@@ -79,24 +90,31 @@ const startMessage = [
     }
 ]
 
-async function test() {
-    db.query('select * from department', (err, results) => {
-        if (err) {
-            console.log(err)
-        } else {
-            const table = cTable.getTable(results)
-            console.log(table);
-        }
-    });
-    db.query('select * from role', (err, results) => {
-        if (err) {
-            console.log(err)
-        } else {
-            const table = cTable.getTable(results)
-            console.log(table);
-        }
-    });
-}
+const departmentName = [
+    {
+        type: 'input',
+        name: 'name',
+        message: 'What is the name of the department you would like to add?'
+    }
+]
+
+const roleInfo = [
+    {
+        type: 'input',
+        name: 'name',
+        message: 'What is the name of the role?'
+    },
+    {
+        type: 'input',
+        name: 'salary',
+        message: 'What is the salary of the role?'
+    },
+    {
+        type: 'input',
+        name: 'department',
+        message: 'What is the department id of the role?'
+    },
+]
 
 const init = async () => {
     const db = getMysql();
