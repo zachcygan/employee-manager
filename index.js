@@ -17,7 +17,7 @@ const getMysql = async () => {
         console.log('Connected to employees_db database')
     );
 
-    
+    console.log(db)
 
     let adding = true;
     while (adding) {
@@ -33,17 +33,17 @@ const getMysql = async () => {
                 console.log(table);   
                 break;
             case 'view all roles':
-                [row, fields] = await db.execute(`select role.id, role.title, department.name, role.salary 
-                                                FROM role INNER JOIN department ON role.department_id = department.id`)
+                [row, fields] = await db.execute(`SELECT role.id, role.title, department.name, role.salary 
+                                                  FROM role INNER JOIN department ON role.department_id = department.id`)
                 table = cTable.getTable(row)
                 console.log(table); 
                 break;
             case 'view all employees':
-                [row, fields] = await db.execute(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary 
-                                                FROM employee 
-                                                INNER JOIN role ON employee.role_id = role.id 
-                                                INNER JOIN department ON role.department_id = department.id 
-                                                INNER JOIN employee manager ON employee.manager_id = manager.id`)
+                [row, fields] = await db.execute(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, employee.manager_id AS manager
+                                                  FROM employee 
+                                                  INNER JOIN role ON employee.role_id = role.id 
+                                                  INNER JOIN department ON role.department_id = department.id 
+                                                  `)
                 table = cTable.getTable(row)
                 console.log(table);
                 break;
@@ -63,8 +63,8 @@ const getMysql = async () => {
                 console.log(`Added ${employee.firstName} ${employee.lastName} to database`)
                 break;
             case 'update an employee role':
-                await db.execute(`UPDATE employee SET role_id = ${} WHERE`)
-                console.log('update an employee role');
+                // await db.execute(`UPDATE employee SET role_id = ${} WHERE`)
+                console.log('Updated an employees role');
                 break;
             case 'quit':
                 adding = false;
@@ -132,9 +132,9 @@ const employeeInfo = [
         message: 'What is the last name of the employee?'
     },
     {
-        type: 'input',
+        type: 'list',
         name: 'role',
-        message: 'What is the role id of the employee?'
+        message: "What is the the employee's role?"
     },
     {
         type: 'input',
@@ -143,16 +143,4 @@ const employeeInfo = [
     }
 ]
 
-const init = async () => {
-    const db = getMysql();
-    let adding = true;
-
-    console.clear();
-
-
-    
-    }
-
-
-init();
-
+getMysql();
