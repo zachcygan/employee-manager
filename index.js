@@ -32,7 +32,8 @@ const getMysql = async () => {
                 break;
             case 'view all roles':
                 [row, fields] = await db.execute(`SELECT role.id, role.title, department.name, role.salary 
-                                                  FROM role INNER JOIN department ON role.department_id = department.id`)
+                                                  FROM role 
+                                                  INNER JOIN department ON role.department_id = department.id`)
                 table = cTable.getTable(row)
                 console.log(table); 
                 break;
@@ -61,6 +62,16 @@ const getMysql = async () => {
                 console.log(`Added ${employee.firstName} ${employee.lastName} to database`)
                 break;
             case 'update an employee role':
+
+                // USED FOR INQUIRER CHIOCES
+                const test = await db.execute(`SELECT first_name FROM employee`);
+                let arr = []
+                for (let i = 0; i < test[0].length; i++) {
+                    arr.push(test[0][i].first_name)
+                }
+
+                console.log(arr)
+
                 // await db.execute(`UPDATE employee SET role_id = ${} WHERE`)
                 console.log('Updated an employees role');
                 break;
@@ -73,6 +84,8 @@ const getMysql = async () => {
                 break;
         }
     }
+
+    
 }
 
 
