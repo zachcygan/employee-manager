@@ -1,6 +1,7 @@
 const startOptions = require('./src/startMessage');
 const addDepartment = require('./src/addDepartment');
-const addRole = require('./src/addRole')
+const addRole = require('./src/addRole');
+const addEmployee = require('./src/addEmployee');
 const cTable = require('console.table');
 
 const getMysql = async () => {
@@ -54,10 +55,12 @@ const getMysql = async () => {
             case 'add a role':
                 let role = await addRole(roleInfo);
                 await db.execute(`INSERT INTO ROLE (title, salary, department_id) VALUES ('${role.name}', ${role.salary}, ${role.department})`)
-                console.log('add a role');
+                console.log(`Added ${role.name} added to database`);
                 break;
             case 'add an employee':
-                console.log('add an employee');
+                let employee = await addEmployee(employeeInfo)
+                await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${employee.firstName}', '${employee.lastName}', ${employee.role}, ${employee.manager})`);                console.log('add an employee');
+                console.log(`Added employee to database`)
                 break;
             case 'update an employee role':
                 console.log('update an employee role');
@@ -114,6 +117,29 @@ const roleInfo = [
         name: 'department',
         message: 'What is the department id of the role?'
     },
+]
+
+const employeeInfo = [
+    {
+        type: 'input',
+        name: 'firstName',
+        message: 'What is the first name of the employee?'
+    },
+    {
+        type: 'input',
+        name: 'lastName',
+        message: 'What is the last name of the employee?'
+    },
+    {
+        type: 'input',
+        name: 'role',
+        message: 'What is the role id of the employee?'
+    },
+    {
+        type: 'input',
+        name: 'manager',
+        message: 'What is the manager id of the employee?'
+    }
 ]
 
 const init = async () => {
