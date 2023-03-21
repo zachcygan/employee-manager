@@ -15,8 +15,6 @@ const getMysql = async () => {
         console.log('Connected to employees_db database')
     );
 
-    console.log(db)
-
     let adding = true;
     while (adding) {
         let choice = await askQuestion(startMessage);
@@ -38,22 +36,22 @@ const getMysql = async () => {
                 console.log(table); 
                 break;
             case 'view all employees':
-                [row, fields] = await db.execute(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, employee.manager_id AS manager
+                [row, fields] = await db.execute(`SELECT employee.id, employee.first_name, employee.last_name, role.     title, department.name AS department, role.salary, manager.first_name AS manager
                                                   FROM employee 
                                                   INNER JOIN role ON employee.role_id = role.id 
                                                   INNER JOIN department ON role.department_id = department.id 
-                                                  INNER JOIN employee ON employee.first_name = manager.first_name`)
+                                                  LEFT JOIN employee manager ON manager.id = employee.manager_id`)
                 table = cTable.getTable(row)
                 console.log(table);
                 break;
             case 'add a department':
                 let name = await askQuestion(departmentName);
-                await db.execute(`INSERT INTO department (name) VALUES ('${name}')`)
-                console.log(`Added ${name} to the database`);
+                await db.execute(`INSERT INTO department (name) VALUES ('?')`, [name])
+                console.log(`Added ${name.name} to the database`);
                 break;
             case 'add a role':
                 let role = await askQuestion(roleInfo);
-                await db.execute(`INSERT INTO ROLE (title, salary, department_id) VALUES ('${role.name}', ${role.salary}, ${role.department})`)
+                await db.execute(`INSERT INTO ROLE (title, salary, department_id) VALUES ('?', ?, ?)`, [role.name, role.salary, role.department])
                 console.log(`Added ${role.name} added to database`);
                 break;
             case 'add an employee':
@@ -145,7 +143,8 @@ const employeeInfo = [
     {
         type: 'list',
         name: 'role',
-        message: "What is the the employee's role?"
+        message: "What is the the employee's role?",
+        choices: []
     },
     {
         type: 'input',
