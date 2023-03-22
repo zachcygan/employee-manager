@@ -103,43 +103,98 @@ const getMysql = async () => {
                 console.log(`Added ${employee.firstName} ${employee.lastName} to database`)
 
                 break;
-            case 'update an employee role':
-                
+            case 'update an employees info':
+                let option = await askQuestion(options);
 
-                const employeeOptions = await db.execute(`SELECT CONCAT (first_name,' ', last_name) AS fullName, id FROM employee`);
-                
-                const updateRole = await db.execute(`SELECT title, id FROM role`);
+                switch (option.update) {
+                    case 'Manager':
+                        employees.length = 0;
+                        const employeeChoices = await db.execute(`SELECT CONCAT (first_name,' ', last_name) AS fullName, id FROM employee`);
 
-                for (let i = 0; i < employeeOptions[0].length; i++) {
-                    employees.push(employeeOptions[0][i].fullName)
+                        for (let i = 0; i < employeeChoices[0].length; i++) {
+                            employees.push(employeeChoices[0][i].fullName)
+                        }
+                        employees.push('null')
+                        
+
+                        let managerUpdate = await askQuestion(updateManager)
+
+                        let eId = employeeChoices[0].find(findEmployee => {
+
+                            if (findEmployee.fullName === managerUpdate.employee) {
+                                return findEmployee.id
+                            }
+                        })
+
+                        if (managerUpdate.manager !== 'null') {
+                            eId = eId.id
+                        } else {
+                            eId = eId.id
+                            await db.execute(`UPDATE employee SET manager_id = null WHERE id = ?`, [eId])
+                            console.log('Updated an employees role');
+                            break;
+                        }
+
+                        if (managerUpdate.employee === managerUpdate.manager) {
+                            console.log('Error. An employee cannot be thier own manger')
+                            return;
+                        }
+
+                        let mUpdate = employeeChoices[0].find(findManager => {
+                            console.log('IN LOOP ' + findManager)
+
+                            if (findManager.fullName === managerUpdate.manager) {
+                                return managerUpdate.employee
+                            }
+                        })
+
+                        
+                        mUpdate = mUpdate.id
+
+                        await db.execute(`UPDATE employee SET manager_id = ? WHERE id = ?`, [mUpdate, eId])
+                        console.log('Updated an employees role');
+                        break;
+                    case 'Role':
+                        employees.length = 0;
+                        const employeeOptions = await db.execute(`SELECT CONCAT (first_name,' ', last_name) AS fullName, id FROM employee`);
+
+                        const updateRole = await db.execute(`SELECT title, id FROM role`);
+
+                        for (let i = 0; i < employeeOptions[0].length; i++) {
+                            employees.push(employeeOptions[0][i].fullName)
+                        }
+
+                        for (let i = 0; i < updateRole[0].length; i++) {
+                            assignRole.push(updateRole[0][i].title)
+                        }
+
+                        let update = await askQuestion(updateEmployee)
+
+                        let roleUpdate = updateRole[0].find(findRole => {
+
+                            if (findRole.title === update.role) {
+                                return findRole.id
+                            }
+                        })
+
+                        roleUpdate = roleUpdate.id
+
+                        let id = employeeOptions[0].find(findEmployee => {
+
+                            if (findEmployee.fullName === update.employee) {
+                                return findEmployee.id
+                            }
+                        })
+
+                        id = id.id;
+
+                        await db.execute(`UPDATE employee SET role_id = ? WHERE id = ?`, [roleUpdate, id])
+                        console.log('Updated an employees role');
+
+                        break;
                 }
 
-                for (let i = 0; i < updateRole[0].length; i++) {
-                    assignRole.push(updateRole[0][i].title)
-                }
-
-                let update = await askQuestion(updateEmployee) 
-
-                let roleUpdate = updateRole[0].find(findRole => {
-           
-                    if(findRole.title === update.role) {
-                        return findRole.id
-                    }         
-                })
-
-                roleUpdate = roleUpdate.id
-
-                let id = employeeOptions[0].find(findEmployee => {
-           
-                    if(findEmployee.fullName === update.employee) {
-                        return findEmployee.id
-                    }         
-                })
-
-                id = id.id;
-
-                await db.execute(`UPDATE employee SET role_id = ? WHERE id = ?`, [roleUpdate, id])
-                console.log('Updated an employees role');
+                
                 break;
             case 'quit':
                 adding = false;
@@ -166,7 +221,7 @@ const startMessage = [
                   'add a department',
                   'add a role',
                   'add an employee',
-                  'update an employee role',
+                  'update an employees info',
                   'quit']
     }
 ]
@@ -237,5 +292,27 @@ const updateEmployee = [
         choices: assignRole
     },
 ]
+const updateManager = [
+    {
+        type: 'list',
+        name: 'employee',
+        message: 'Which employees manager do you want to update?',
+        choices: employees
+    },
+    {
+        type: 'list',
+        name: 'manager',
+        message: 'Who is their new manager?',
+        choices: employees
+    }
+]
 
+const options = [
+    {
+        type: 'list',
+        name: 'update',
+        message: 'Would you like to update the employees role or manager?',
+        choices: ['Role', 'Manager']
+    }
+]
 getMysql();
