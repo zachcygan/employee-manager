@@ -99,7 +99,8 @@ const getMysql = async () => {
                 roleId = roleId[0][0].id
                 managerId = managerId[0][0].id
 
-                await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${employee.firstName}", "${employee.lastName}", ${roleId}, ${managerId})`);
+                await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) 
+                                  VALUES (?, ?, ?, ?)`, [employee.firstName, employee.lastName, roleId, managerId]);
                 console.log(`Added ${employee.firstName} ${employee.lastName} to database`)
 
                 break;
