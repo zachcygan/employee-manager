@@ -1,8 +1,12 @@
 const askQuestion = require('./src/askQuestion');
 
 const cTable = require('console.table');
+const { up } = require('inquirer/lib/utils/readline');
 const roles = [];
+const employees = [];
 const managers = [];
+const deparments = [];
+const assignRole = [];
 
 const getMysql = async () => {
     const mysql = require('mysql2/promise');
@@ -39,22 +43,35 @@ const getMysql = async () => {
                 console.log(table); 
                 break;
             case 'view all employees':
-                [row, fields] = await db.execute(`SELECT employee.id, employee.first_name, employee.last_name, role.     title, department.name AS department, role.salary, manager.first_name AS manager
+                [row, fields] = await db.execute(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, manager.first_name AS manager
                                                   FROM employee
                                                   INNER JOIN role ON employee.role_id = role.id 
                                                   INNER JOIN department ON role.department_id = department.id 
-                                                  LEFT JOIN employee manager ON manager.id = employee.manager_id`)
+                                                  LEFT JOIN employee manager ON manager.id = employee.manager_id ORDER by id`)
                 table = cTable.getTable(row)
                 console.log(table);
                 break;
             case 'add a department':
                 let name = await askQuestion(departmentName);
-                await db.execute(`INSERT INTO department (name) VALUES ('?')`, [name])
+                await db.execute(`INSERT INTO department (name) VALUES (?)`, [name.name])
                 console.log(`Added ${name.name} to the database`);
                 break;
             case 'add a role':
+                deparments.length = 0;
+
+                const departmentOptions = await db.execute(`SELECT name FROM department`);
+
+                for (let i = 0; i < departmentOptions[0].length; i++) {
+                    deparments.push(departmentOptions[0][i].name)
+                }
+
                 let role = await askQuestion(roleInfo);
-                await db.execute(`INSERT INTO ROLE (title, salary, department_id) VALUES ('?', ?, ?)`, [role.name, role.salary, role.department])
+
+                let departmentId = await db.execute('SELECT id FROM department WHERE name=?', [role.department])
+
+                departmentId = departmentId[0][0].id
+
+                await db.execute(`INSERT INTO ROLE (title, salary, department_id) VALUES (?, ?, ?)`, [role.name, role.salary, departmentId])
                 console.log(`Added ${role.name} added to database`);
                 break;
             case 'add an employee':
@@ -81,19 +98,47 @@ const getMysql = async () => {
                 
                 roleId = roleId[0][0].id
                 managerId = managerId[0][0].id
-                console.log(roleId)
-                console.log(typeof managerId)
 
                 await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${employee.firstName}", "${employee.lastName}", ${roleId}, ${managerId})`);
                 console.log(`Added ${employee.firstName} ${employee.lastName} to database`)
 
-                
-
                 break;
             case 'update an employee role':
+                
 
+                const employeeOptions = await db.execute(`SELECT CONCAT (first_name,' ', last_name) AS fullName, id FROM employee`);
+                
+                const updateRole = await db.execute(`SELECT title, id FROM role`);
 
-                // await db.execute(`UPDATE employee SET role_id = ${} WHERE`)
+                for (let i = 0; i < employeeOptions[0].length; i++) {
+                    employees.push(employeeOptions[0][i].fullName)
+                }
+
+                for (let i = 0; i < updateRole[0].length; i++) {
+                    assignRole.push(updateRole[0][i].title)
+                }
+
+                let update = await askQuestion(updateEmployee) 
+
+                let roleUpdate = updateRole[0].find(findRole => {
+           
+                    if(findRole.title === update.role) {
+                        return findRole.id
+                    }         
+                })
+
+                roleUpdate = roleUpdate.id
+
+                let id = employeeOptions[0].find(findEmployee => {
+           
+                    if(findEmployee.fullName === update.employee) {
+                        return findEmployee.id
+                    }         
+                })
+
+                id = id.id;
+
+                await db.execute(`UPDATE employee SET role_id = ? WHERE id = ?`, [roleUpdate, id])
                 console.log('Updated an employees role');
                 break;
             case 'quit':
@@ -146,9 +191,10 @@ const roleInfo = [
         message: 'What is the salary of the role?'
     },
     {
-        type: 'input',
+        type: 'list',
         name: 'department',
-        message: 'What is the department id of the role?'
+        message: 'Which department does this role belong to?',
+        choices: deparments
     },
 ]
 
@@ -175,6 +221,21 @@ const employeeInfo = [
         message: 'Who is the employees manager?',
         choices: managers
     }
+]
+
+const updateEmployee = [
+    {
+        type: 'list',
+        name: 'employee',
+        message: 'Which employees role do you want to update?',
+        choices: employees
+    },
+    {
+        type: 'list',
+        name: 'role',
+        message: 'Which role do you want to assign to the selected employee?',
+        choices: assignRole
+    },
 ]
 
 getMysql();
