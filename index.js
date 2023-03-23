@@ -178,6 +178,8 @@ const getMysql = async () => {
                             }
                         })
 
+                        
+
                         roleUpdate = roleUpdate.id
 
                         let id = employeeOptions[0].find(findEmployee => {
@@ -188,6 +190,9 @@ const getMysql = async () => {
                         })
 
                         id = id.id;
+
+                        console.log(roleUpdate)
+                        console.log(id)
 
                         await db.execute(`UPDATE employee SET role_id = ? WHERE id = ?`, [roleUpdate, id])
                         console.log('\nUpdated an employees role\n');
@@ -215,7 +220,8 @@ const getMysql = async () => {
                                                FROM department
                                                LEFT JOIN role ON department.id = role.department_id
                                                LEFT JOIN employee ON role.id = employee.role_id
-                                               WHERE department.id = ?`, [getDepartmentId]);
+                                               WHERE department.id = ?
+                                               GROUP BY department.id`, [getDepartmentId]);
 
                 table = cTable.getTable(budget[0])
                 console.log('\n'+table);
