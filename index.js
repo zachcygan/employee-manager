@@ -319,6 +319,7 @@ const updateEmployee = [
         choices: assignRole
     },
 ]
+
 const updateManager = [
     {
         type: 'list',
