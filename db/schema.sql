@@ -29,5 +29,5 @@ create table employee (
     on delete cascade,
     foreign key (manager_id)
     references employee(id)
-    on delete set null
+    on delete set null;
 );

@@ -193,13 +193,34 @@ const getMysql = async () => {
                         console.log('\nUpdated an employees role\n');
 
                         break;
+                }  
+                break;
+            case 'view total budget of a department':
+                deparments.length = 0;
+
+                const departmentBudgetOptions = await db.execute(`SELECT name FROM department`);
+
+                for (let i = 0; i < departmentBudgetOptions[0].length; i++) {
+                    deparments.push(departmentBudgetOptions[0][i].name)
                 }
 
-                
-                break;
-            case 'quit':
-                adding = false;
-                choice.ui.close();
+                let departmentBudget = await askQuestion(viewBudget);
+
+                let getDepartmentId = await db.execute('SELECT id FROM department WHERE name=?', [departmentBudget.department])
+
+                getDepartmentId = getDepartmentId[0][0].id
+
+
+                let budget = await db.execute(`SELECT department.name AS department, SUM(role.salary) AS total_budget
+                                               FROM department
+                                               LEFT JOIN role ON department.id = role.department_id
+                                               LEFT JOIN employee ON role.id = employee.role_id
+                                               WHERE department.id = ?
+                                               GROUP BY department.id`, [getDepartmentId]);
+
+                table = cTable.getTable(budget[0])
+                console.log('\n'+table);
+
                 break;
             default:
                 adding = false;
@@ -223,7 +244,7 @@ const startMessage = [
                   'add a role',
                   'add an employee',
                   'update an employees info',
-                  'quit']
+                  'view total budget of a department']
     }
 ]
 
@@ -231,7 +252,8 @@ const departmentName = [
     {
         type: 'input',
         name: 'name',
-        message: 'What is the name of the department you would like to add?'
+        message: 'What is the name of the department you would like to add?',
+        validate: async val => /[0-9a-zA-z]/gi.test(val)
     }
 ]
 
@@ -239,12 +261,14 @@ const roleInfo = [
     {
         type: 'input',
         name: 'name',
-        message: 'What is the name of the role?'
+        message: 'What is the name of the role?',
+        validate: async val => /[0-9a-zA-z]/gi.test(val)
     },
     {
         type: 'input',
         name: 'salary',
-        message: 'What is the salary of the role?'
+        message: 'What is the salary of the role?',
+        validate: async val => /[0-9]/gi.test(val)
     },
     {
         type: 'list',
@@ -258,12 +282,14 @@ const employeeInfo = [
     {
         type: 'input',
         name: 'firstName',
-        message: 'What is the first name of the employee?'
+        message: 'What is the first name of the employee?',
+        validate: async val => /[a-zA-z]/gi.test(val)
     },
     {
         type: 'input',
         name: 'lastName',
-        message: 'What is the last name of the employee?'
+        message: 'What is the last name of the employee?',
+        validate: async val => /[a-zA-z]/gi.test(val)
     },
     {
         type: 'list',
@@ -314,6 +340,15 @@ const options = [
         name: 'update',
         message: 'Would you like to update the employees role or manager?',
         choices: ['Role', 'Manager']
+    }
+]
+
+const viewBudget = [
+    {
+        type: 'list',
+        name: 'department',
+        message: 'Which department would you like to view the total budget of?',
+        choices: deparments
     }
 ]
 getMysql();
