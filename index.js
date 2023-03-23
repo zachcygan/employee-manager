@@ -142,7 +142,6 @@ const getMysql = async () => {
                         }
 
                         let mUpdate = employeeChoices[0].find(findManager => {
-                            console.log('IN LOOP ' + findManager)
 
                             if (findManager.fullName === managerUpdate.manager) {
                                 return managerUpdate.employee
