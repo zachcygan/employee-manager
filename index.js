@@ -191,8 +191,6 @@ const getMysql = async () => {
 
                         id = id.id;
 
-                        console.log(roleUpdate)
-                        console.log(id)
 
                         await db.execute(`UPDATE employee SET role_id = ? WHERE id = ?`, [roleUpdate, id])
                         console.log('\nUpdated an employees role\n');
