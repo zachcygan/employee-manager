@@ -18,7 +18,7 @@ const getMysql = async () => {
             password: 'Rk49FmRk49Fm!',
             database: 'employees_db',
         },
-        console.log('Connected to employees_db database')
+        console.log('\nConnected to employees_db database\n')
     );
 
     let adding = true;
@@ -54,7 +54,7 @@ const getMysql = async () => {
             case 'add a department':
                 let name = await askQuestion(departmentName);
                 await db.execute(`INSERT INTO department (name) VALUES (?)`, [name.name])
-                console.log(`Added ${name.name} to the database`);
+                console.log(`\nAdded ${name.name} to the database\n`);
                 break;
             case 'add a role':
                 deparments.length = 0;
@@ -72,7 +72,7 @@ const getMysql = async () => {
                 departmentId = departmentId[0][0].id
 
                 await db.execute(`INSERT INTO ROLE (title, salary, department_id) VALUES (?, ?, ?)`, [role.name, role.salary, departmentId])
-                console.log(`Added ${role.name} added to database`);
+                console.log(`\nAdded ${role.name} added to database\n`);
                 break;
             case 'add an employee':
                 roles.length = 0;
@@ -101,7 +101,7 @@ const getMysql = async () => {
 
                 await db.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) 
                                   VALUES (?, ?, ?, ?)`, [employee.firstName, employee.lastName, roleId, managerId]);
-                console.log(`Added ${employee.firstName} ${employee.lastName} to database`)
+                console.log(`\nAdded ${employee.firstName} ${employee.lastName} to database\n`)
 
                 break;
             case 'update an employees info':
@@ -137,7 +137,7 @@ const getMysql = async () => {
                         }
 
                         if (managerUpdate.employee === managerUpdate.manager) {
-                            console.log('Error. An employee cannot be thier own manger')
+                            console.log('\nError. An employee cannot be thier own manger\n')
                             return;
                         }
 
@@ -153,7 +153,7 @@ const getMysql = async () => {
                         mUpdate = mUpdate.id
 
                         await db.execute(`UPDATE employee SET manager_id = ? WHERE id = ?`, [mUpdate, eId])
-                        console.log('Updated an employees role');
+                        console.log('\nUpdated an employees manager\n');
                         break;
                     case 'Role':
                         employees.length = 0;
@@ -190,7 +190,7 @@ const getMysql = async () => {
                         id = id.id;
 
                         await db.execute(`UPDATE employee SET role_id = ? WHERE id = ?`, [roleUpdate, id])
-                        console.log('Updated an employees role');
+                        console.log('\nUpdated an employees role\n');
 
                         break;
                 }
