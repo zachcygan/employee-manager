@@ -215,8 +215,7 @@ const getMysql = async () => {
                                                FROM department
                                                LEFT JOIN role ON department.id = role.department_id
                                                LEFT JOIN employee ON role.id = employee.role_id
-                                               WHERE department.id = ?
-                                               GROUP BY department.id`, [getDepartmentId]);
+                                               WHERE department.id = ?`, [getDepartmentId]);
 
                 table = cTable.getTable(budget[0])
                 console.log('\n'+table);
