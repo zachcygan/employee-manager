@@ -108,7 +108,7 @@ const getMysql = async () => {
                 let option = await askQuestion(options);
 
                 switch (option.update) {
-                    case 'Manager':
+                    case 'manager':
                         employees.length = 0;
                         const employeeChoices = await db.execute(`SELECT CONCAT (first_name,' ', last_name) AS fullName, id FROM employee`);
 
@@ -155,7 +155,7 @@ const getMysql = async () => {
                         await db.execute(`UPDATE employee SET manager_id = ? WHERE id = ?`, [mUpdate, eId])
                         console.log('\nUpdated an employees manager\n');
                         break;
-                    case 'Role':
+                    case 'role':
                         employees.length = 0;
                         const employeeOptions = await db.execute(`SELECT CONCAT (first_name,' ', last_name) AS fullName, id FROM employee`);
 
@@ -340,7 +340,7 @@ const options = [
         type: 'list',
         name: 'update',
         message: 'Would you like to update the employees role or manager?',
-        choices: ['Role', 'Manager']
+        choices: ['role', 'manager']
     }
 ]
 
