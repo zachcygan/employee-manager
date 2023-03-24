@@ -16,7 +16,7 @@ The webpage is available at https://github.com/zachcygan/employee-manager. Be su
 
 ## Instructions
 
-To begin installing the program, to be sure to type "npm i" inside the terminal to install any dependencies. 
+To use this application, you must have Node.js and MySQL installed on your computer. Navigate to the repository on your computer and type "npm i" to install the necessary dependencies. When you choose "View all departments", a formatted table will be displayed showing all department names and department IDs. When you choose "View all roles", a formatted table will be displayed showing all job titles, role IDs, the department that role belongs to, and the salary for that role. When you choose "View all employees", a formatted table will be displayed showing all employee data, including employee IDs, first names, last names, job titles, departments, salaries, and managers that the employees report to. When you choose "Add a department", you will be prompted to enter the name of the department. Once you enter the name, the new department will be added to the database. When you choose "Add a role", you will be prompted to enter the name, salary, and department for the new role. Once you enter this information, the new role will be added to the database. When you choose "Add an employee", you will be prompted to enter the employee's first name, last name, role, and manager. Once you enter this information, the new employee will be added to the database. When you choose "Update employee info", you will be prompted to select an employee to update and their new role. Once you enter this information, the employee's role will be updated in the database. Additionally, you may adjust the employees manager in this option as well. 
 
 ## Video Demonstration
 
@@ -27,5 +27,6 @@ Link to video demo: https://youtu.be/t9e-KyE6ox0
 ![screenshot of the website](/public/assets/images/screenshot.png)
 ![screenshot of the website](/public/assets/images/screenshot2.png)
 ![screenshot of the website](/public/assets/images/screenshot3.png)
+![screenshot of the website](/public/assets/images/screenshot4.png)
 
 

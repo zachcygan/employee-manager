@@ -15,7 +15,7 @@ const getMysql = async () => {
         {
             host: 'localhost',
             user: 'root',
-            password: 'Rk49FmRk49Fm!',
+            password: '',
             database: 'employees_db',
         },
         console.log('\nConnected to employees_db database\n')
