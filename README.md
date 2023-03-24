@@ -24,9 +24,9 @@ Link to video demo: https://youtu.be/t9e-KyE6ox0
 
 ## Screenshots
 
-![screenshot of the website](/public/assets/images/screenshot.png)
-![screenshot of the website](/public/assets/images/screenshot2.png)
-![screenshot of the website](/public/assets/images/screenshot3.png)
-![screenshot of the website](/public/assets/images/screenshot4.png)
+![screenshot of the website](/assets/images/screenshot.png)
+![screenshot of the website](/assets/images/screenshot2.png)
+![screenshot of the website](/assets/images/screenshot3.png)
+![screenshot of the website](/assets/images/screenshot4.png)
 
 
